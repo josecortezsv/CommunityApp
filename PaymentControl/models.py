@@ -3,15 +3,19 @@ from django.db import models
 from datetime import datetime
 from django.utils import timezone
 
-class Calendarios(models.Model):
+
+class Calendario(models.Model):
     mesanio = models.DateField(unique=True)
     fechacreacion = models.DateField(default=timezone.now)
     fechamodificacion = models.DateField(default=timezone.now)
     usuariocreacion = models.CharField(max_length=30)
     usuarioactualizacion=models.CharField(max_length=30)
 
+    def __str__(self):
+        return str(self.mesanio)
 
-class TipoCuotas(models.Model):
+
+class TipoCuota(models.Model):
     descripcion = models.CharField(max_length=100)
     valor = models.DecimalField(max_digits=6, decimal_places=2)
     inactiva = models.BooleanField(default=False)
@@ -20,10 +24,13 @@ class TipoCuotas(models.Model):
     usuariocreacion = models.CharField(max_length=30)
     usuarioactualizacion=models.CharField(max_length=30)
 
+    def __str__(self):
+        return "{} ({:.2f})".format(self.descripcion, self.valor)
 
-class TipoIngresos(models.Model):
+
+class TipoIngreso(models.Model):
     descripcion = models.CharField(max_length=100)
-    codigo = models.CharField(max_length=100)
+    cuentacontable = models.CharField(max_length=100)
     inactiva = models.BooleanField(default=False)
     fechacreacion = models.DateField(default=timezone.now)
     fechamodificacion = models.DateField(default=timezone.now)
@@ -31,9 +38,11 @@ class TipoIngresos(models.Model):
     usuarioactualizacion=models.CharField(max_length=30)
 
 
-class TipoEgresos(models.Model):
+
+
+class TipoEgreso(models.Model):
     descripcion = models.CharField(max_length=100)
-    codigo = models.CharField(max_length=100)
+    cuentacontable = models.CharField(max_length=100)
     inactiva = models.BooleanField(default=False)
     fechacreacion = models.DateField(default=timezone.now)
     fechamodificacion = models.DateField(default=timezone.now)
@@ -41,7 +50,7 @@ class TipoEgresos(models.Model):
     usuarioactualizacion=models.CharField(max_length=30)
 
 
-class TipoInmuebles(models.Model):
+class TipoInmueble(models.Model):
     descripcion = models.CharField(max_length=100)
     inactiva = models.BooleanField(default=False)
     fechacreacion = models.DateField(default=timezone.now)
@@ -50,7 +59,7 @@ class TipoInmuebles(models.Model):
     usuarioactualizacion=models.CharField(max_length=30)
 
 
-class TipoPagos(models.Model):
+class TipoPago(models.Model):
     descripcion = models.CharField(max_length=100)
     inactiva = models.BooleanField(default=False)
     fechacreacion = models.DateField(default=timezone.now)
@@ -59,9 +68,10 @@ class TipoPagos(models.Model):
     usuarioactualizacion=models.CharField(max_length=30)
 
 
-class CuentasBancarias(models.Model):
+class CuentasBancaria(models.Model):
     descripcion = models.CharField(max_length=100)
-    cuenta = models.CharField(max_length=50)
+    numerocuenta = models.CharField(max_length=50)
+    cuentacontable = models.CharField(max_length=100)
     AHORRO='01'
     CORRIENTE='02'
     A_PLAZO='03'
@@ -80,7 +90,7 @@ class CuentasBancarias(models.Model):
     usuarioactualizacion=models.CharField(max_length=30)
 
 
-class Proyectos(models.Model):
+class Proyecto(models.Model):
     nombre = models.CharField(max_length=100, unique=True)
     fechainicio = models.DateField()
     fechafinal = models.DateField()
@@ -95,7 +105,7 @@ class Proyectos(models.Model):
     usuarioactualizacion=models.CharField(max_length=30)
 
 
-class Personas(models.Model):
+class Persona(models.Model):
     nombre = models.CharField(max_length=250)
     telefono = models.CharField(max_length=50)
     telefonotrabajo = models.CharField(max_length=50)
@@ -109,7 +119,7 @@ class Personas(models.Model):
     usuarioactualizacion=models.CharField(max_length=30)
 
 
-class Proveedores(models.Model):
+class Proveedore(models.Model):
     nombre = models.CharField(max_length=250)
     telefono = models.CharField(max_length=50)
     correo = models.CharField(max_length=50)
@@ -122,12 +132,12 @@ class Proveedores(models.Model):
     usuarioactualizacion=models.CharField(max_length=30)
 
 
-class Inmuebles(models.Model):
+class Inmueble(models.Model):
     cuentacontable = models.CharField(max_length=50, unique=True)
-    tipoinmueble = models.ForeignKey(TipoInmuebles, on_delete=models.PROTECT)
+    tipoinmueble = models.ForeignKey(TipoInmueble, on_delete=models.PROTECT)
     numerocasa = models.CharField(max_length=5)
-    tipocuota = models.ForeignKey(TipoCuotas, on_delete=models.PROTECT)
-    propietario = models.ForeignKey(Personas, on_delete=models.PROTECT)
+    tipocuota = models.ForeignKey(TipoCuota, on_delete=models.PROTECT)
+    propietario = models.ForeignKey(Persona, on_delete=models.PROTECT)
     propietario_desde = models.DateField()
     fechacreacion = models.DateField(default=timezone.now)
     fechamodificacion = models.DateField(default=timezone.now)
@@ -135,13 +145,13 @@ class Inmuebles(models.Model):
     usuarioactualizacion=models.CharField(max_length=30)
 
 
-class Ingresos(models.Model):
+class Ingreso(models.Model):
     fecha = models.DateField(default=timezone.now)
-    mesanio = models.ForeignKey(Calendarios, on_delete=models.PROTECT)
-    tipoingreso = models.ForeignKey(TipoIngresos, on_delete=models.PROTECT)
-    tipopago = models.ForeignKey(TipoPagos, on_delete=models.PROTECT)
+    mesanio = models.ForeignKey(Calendario, on_delete=models.PROTECT)
+    tipoingreso = models.ForeignKey(TipoIngreso, on_delete=models.PROTECT)
+    tipopago = models.ForeignKey(TipoPago, on_delete=models.PROTECT)
     numerorecibo = models.CharField(max_length=50)
-    numerocasa = models.ForeignKey(Inmuebles, on_delete=models.PROTECT)
+    numerocasa = models.ForeignKey(Inmueble, on_delete=models.PROTECT)
     nombrerecibo = models.CharField(max_length=255)
     concepto = models.CharField(max_length=255)
     valor = models.DecimalField(max_digits=10, decimal_places=2)
@@ -155,7 +165,7 @@ class Ingresos(models.Model):
     usuarioactualizacion=models.CharField(max_length=30)
 
 
-class Egresos(models.Model):
+class Egreso(models.Model):
     fecha = models.DateField(default=timezone.now)
     numerodocumento = models.DateField(max_length=50)
     FACTURA='01'
@@ -167,14 +177,14 @@ class Egresos(models.Model):
         (CREDITO_FISCAL, 'credito fiscal')
     ]
     tipodocumento=models.CharField(max_length=2, choices=TIPODOCUMENTO_IN_EGRESOS, default=FACTURA)
-    proveedor = models.ForeignKey(Proveedores, on_delete=models.PROTECT)
-    tipoegreso = models.ForeignKey(TipoEgresos, on_delete=models.PROTECT)
-    tipopago = models.ForeignKey(TipoPagos, on_delete=models.PROTECT)
+    proveedor = models.ForeignKey(Proveedore, on_delete=models.PROTECT)
+    tipoegreso = models.ForeignKey(TipoEgreso, on_delete=models.PROTECT)
+    tipopago = models.ForeignKey(TipoPago, on_delete=models.PROTECT)
     valor = models.DecimalField(max_digits=10, decimal_places=2)
     numerocheque = models.CharField(max_length=255)
     anulado = models.BooleanField(default=False)
     comentarios = models.TextField()
-    proyecto = models.ForeignKey(Proyectos, on_delete=models.PROTECT)
+    proyecto = models.ForeignKey(Proyecto, on_delete=models.PROTECT)
     fechacreacion = models.DateField(default=timezone.now)
     fechamodificacion = models.DateField(default=timezone.now)
     usuariocreacion = models.CharField(max_length=30)

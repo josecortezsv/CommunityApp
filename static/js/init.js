@@ -23,9 +23,9 @@ var windowsHeight = $(window).height();
   $('#headerwrap').css('height', windowsHeight + 'px');
 
   $('#headerwrap').backstretch([
-        "static/community/images/bg1.jpg"
-      , "static/community/images/bg2.jpg"
-      , "static/community/mages/bg3.jpg"
+        "static/images/bg1.jpg"
+      , "static/images/bg2.jpg"
+      , "static/images/bg3.jpg"
     ], {duration: 3000, fade: 750});
 
 jQuery(document).ready(function(){
